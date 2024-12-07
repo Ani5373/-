@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生管理</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <script>
+        function editStudent(id, name, enrollment_date, student_number, grade) {
+            document.getElementById('student_id').value = id;
+            document.getElementById('name').value = name;
+            document.getElementById('enrollment_date').value = enrollment_date;
+            document.getElementById('student_number').value = student_number;
+            document.getElementById('grade').value = grade;
+            document.getElementById('action').value = 'update';
+            document.getElementById('submit_button').innerText = '更新学生';
+        }
+        function sortStudents(column, order) {
+            window.location.href = `/manage_students?sort_by=${column}&order=${order}`;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-5">学生管理</h2>
+        <form method="POST" action="/manage_students">
+            <input type="hidden" name="id" id="student_id">
+            <input type="hidden" name="action" id="action" value="add">
+            <div class="form-group">
+                <label for="name">姓名</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="enrollment_date">入学时间</label>
+                <input type="date" class="form-control" id="enrollment_date" name="enrollment_date" required>
+            </div>
+            <div class="form-group">
+                <label for="student_number">学号</label>
+                <input type="text" class="form-control" id="student_number" name="student_number" required>
+            </div>
+            <div class="form-group">
+                <label for="grade">成绩</label>
+                <input type="text" class="form-control" id="grade" name="grade" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submit_button">添加学生</button>
+        </form>
+        <hr>
+        <h3>学生列表</h3>
+        <div class="mb-3">
+            <button class="btn btn-outline-primary" onclick="sortStudents('id', 'asc')">ID升序</button>
+            <button class="btn btn-outline-primary" onclick="sortStudents('grade', 'asc')">成绩升序</button>
+            <button class="btn btn-outline-primary" onclick="sortStudents('grade', 'desc')">成绩降序</button>
+            <button class="btn btn-outline-primary" onclick="sortStudents('student_number', 'asc')">学号升序</button>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>入学时间</th>
+                    <th>学号</th>
+                    <th>成绩</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.enrollment_date }}</td>
+                    <td>{{ student.student_number }}</td>
+                    <td>{{ student.grade }}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editStudent('{{ student.id }}', '{{ student.name }}', '{{ student.enrollment_date }}', '{{ student.student_number }}', '{{ student.grade }}')">编辑</button>
+                        <form method="POST" action="/manage_students" style="display:inline;">
+                            <input type="hidden" name="id" value="{{ student.id }}">
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="btn btn-danger btn-sm">删除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
